@@ -1,13 +1,16 @@
-# Smart-Energy-Consumption-Analysis-and-Prediction-using-Machine-Learning-with-Device-Level-Insights
-The increasing demand for electricity and lack of visibility into energy usage patterns often result in
-energy wastage, higher electricity bills, and inefficient appliance usage. Traditional billing systems
-provide only monthly consumption values without offering meaningful insights into where and how
-energy is used. This project proposes a Smart Energy Consumption Analysis System that monitors energy
-usage device-wise over time, analyzes energy patterns, and predicts future consumption using machine
-learning techniques.
-Using the SmartHome Energy Monitoring Dataset with detailed timestamped device-level power
-readings collected over six months, the system performs time series analysis and forecasting using Long
-Short-Term Memory (LSTM) networks and Linear Regression as a baseline model. It provides users with
-interactive visualizations, smart energy-saving suggestions, and a web-based dashboard built using Flask,
-HTML, CSS, and JavaScript. The system aims to improve energy efficiency, lower electricity costs, and
-support sustainable energy usage behavior.
+# Smart Energy Consumption Analysis and Prediction
+
+This project focuses on analyzing device-level energy consumption
+and forecasting future usage using Machine Learning and Deep Learning.
+
+## Project Workflow
+
+Week 1 – Data Understanding  
+Week 2 – Data Cleaning  
+Week 3 – Feature Engineering  
+Week 4 – Baseline Linear Regression  
+Week 5 – LSTM Model Training  
+
+The project follows a structured ML pipeline from preprocessing
+to deep learning-based forecasting.
+s
