@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Energy – Home Energy Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+<!-- ░░ HEADER ░░ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-name">Smart Energy</div>
+        <div class="brand-tagline">Home Energy Tracker</div>
+      </div>
+    </div>
+    <nav class="nav-tabs">
+      <button class="tab active" onclick="showPage('home',this)">🏠 Home</button>
+      <button class="tab" onclick="showPage('charts',this)">📊 Charts</button>
+      <button class="tab" onclick="showPage('predict',this)">🔮 Predict</button>
+      <button class="tab" onclick="showPage('tips',this)">💡 Tips</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ░░░░░░░░░░░░░░░ HOME PAGE ░░░░░░░░░░░░░░░ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Know Your <span class="highlight">Energy</span><br>Save Your Money</h1>
+      <p class="hero-sub">Simply tell us about your home and appliances — we'll show you exactly how much electricity you'll use next month and what it'll cost.</p>
+      <button class="btn-hero" onclick="showPage('predict', document.querySelectorAll('.tab')[2])">
+        Calculate My Bill →
+      </button>
+    </div>
+    <div class="hero-visual">
+      <div class="energy-orb">
+        <div class="orb-ring r1"></div>
+        <div class="orb-ring r2"></div>
+        <div class="orb-ring r3"></div>
+        <div class="orb-core">⚡</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick stat cards from dataset -->
+  <div class="quick-stats">
+    <div class="stat-card" style="--c:#4F7EF7">
+      <div class="stat-icon">📈</div>
+      <div class="stat-label">Track Consumption</div>
+      <div class="stat-desc">See hourly, daily & monthly charts</div>
+    </div>
+    <div class="stat-card" style="--c:#22C55E">
+      <div class="stat-icon">🔮</div>
+      <div class="stat-label">Predict Next Month</div>
+      <div class="stat-desc">AI-powered bill forecasting</div>
+    </div>
+    <div class="stat-card" style="--c:#F59E0B">
+      <div class="stat-icon">💡</div>
+      <div class="stat-label">Get Smart Tips</div>
+      <div class="stat-desc">Personalised saving suggestions</div>
+    </div>
+    <div class="stat-card" style="--c:#8B5CF6">
+      <div class="stat-icon">📱</div>
+      <div class="stat-label">Easy to Use</div>
+      <div class="stat-desc">No technical knowledge needed</div>
+    </div>
+  </div>
+</div>
+
+<!-- ░░░░░░░░░░░░░░░ CHARTS PAGE ░░░░░░░░░░░░░░░ -->
+<div id="page-charts" class="page">
+  <div class="page-header">
+    <h2 class="page-title">Energy Usage Charts</h2>
+    <p class="page-desc">Visual breakdown of how energy is consumed across different time periods.</p>
+    <button class="btn-refresh" onclick="refreshCharts()">↺ Refresh Charts</button>
+  </div>
+
+  <div class="charts-grid">
+
+    <div class="chart-box span2">
+      <div class="chart-label">
+        <span class="chart-dot" style="background:#4F7EF7"></span>
+        Hourly Average Usage
+        <span class="chart-note">Which hours use the most energy?</span>
+      </div>
+      <img id="img-hourly" src="{{ url_for('static', filename='hourly.png') }}" alt="Hourly chart" class="chart-img"/>
+    </div>
+
+    <div class="chart-box span2">
+      <div class="chart-label">
+        <span class="chart-dot" style="background:#8B5CF6"></span>
+        Daily Consumption – Last 30 Days
+        <span class="chart-note">Purple bars = above average days</span>
+      </div>
+      <img id="img-daily" src="{{ url_for('static', filename='daily.png') }}" alt="Daily chart" class="chart-img"/>
+    </div>
+
+    <div class="chart-box span2">
+      <div class="chart-label">
+        <span class="chart-dot" style="background:#22C55E"></span>
+        Weekly Trend
+        <span class="chart-note">How your usage changes week to week</span>
+      </div>
+      <img id="img-weekly" src="{{ url_for('static', filename='weekly.png') }}" alt="Weekly chart" class="chart-img"/>
+    </div>
+
+    <div class="chart-box span2">
+      <div class="chart-label">
+        <span class="chart-dot" style="background:#F59E0B"></span>
+        Monthly Overview
+        <span class="chart-note">Total units used each month</span>
+      </div>
+      <img id="img-monthly" src="{{ url_for('static', filename='monthly.png') }}" alt="Monthly chart" class="chart-img"/>
+    </div>
+
+    <div class="chart-box span2">
+      <div class="chart-label">
+        <span class="chart-dot" style="background:#EF4444"></span>
+        Which Appliance Uses the Most?
+        <span class="chart-note">Estimated share of total energy</span>
+      </div>
+      <img id="img-device" src="{{ url_for('static', filename='device.png') }}" alt="Device chart" class="chart-img" style="max-height:380px;object-fit:contain;margin:auto;display:block"/>
+    </div>
+
+  </div>
+</div>
+
+<!-- ░░░░░░░░░░░░░░░ PREDICT PAGE ░░░░░░░░░░░░░░░ -->
+<div id="page-predict" class="page">
+  <div class="page-header">
+    <h2 class="page-title">Predict My Energy Bill</h2>
+    <p class="page-desc">Answer 3 simple questions and get your estimated usage and bill instantly.</p>
+  </div>
+
+  <div class="wizard" id="wizard">
+
+    <!-- STEP 1: Members -->
+    <div class="step active" id="step1">
+      <div class="step-header">
+        <div class="step-num">1 of 3</div>
+        <h3 class="step-title">How many people live in your home?</h3>
+        <p class="step-hint">This helps us understand how much energy your household needs.</p>
+      </div>
+      <div class="member-grid">
+        <button class="member-btn" onclick="selectMembers(1,this)">
+          <span class="mb-icon">🧑</span>
+          <span class="mb-num">1</span>
+          <span class="mb-label">Just me</span>
+        </button>
+        <button class="member-btn" onclick="selectMembers(2,this)">
+          <span class="mb-icon">👫</span>
+          <span class="mb-num">2</span>
+          <span class="mb-label">Couple</span>
+        </button>
+        <button class="member-btn" onclick="selectMembers(3,this)">
+          <span class="mb-icon">👨‍👩‍👦</span>
+          <span class="mb-num">3</span>
+          <span class="mb-label">Small family</span>
+        </button>
+        <button class="member-btn" onclick="selectMembers(4,this)">
+          <span class="mb-icon">👨‍👩‍👧‍👦</span>
+          <span class="mb-num">4</span>
+          <span class="mb-label">Family</span>
+        </button>
+        <button class="member-btn" onclick="selectMembers(5,this)">
+          <span class="mb-icon">🏠</span>
+          <span class="mb-num">5</span>
+          <span class="mb-label">Large family</span>
+        </button>
+        <button class="member-btn" onclick="selectMembers(6,this)">
+          <span class="mb-icon">🏡</span>
+          <span class="mb-num">6+</span>
+          <span class="mb-label">Joint family</span>
+        </button>
+      </div>
+      <div class="step-nav">
+        <div></div>
+        <button class="btn-next" onclick="goStep(2)" id="next1" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Appliances -->
+    <div class="step" id="step2">
+      <div class="step-header">
+        <div class="step-num">2 of 3</div>
+        <h3 class="step-title">Which appliances do you use at home?</h3>
+        <p class="step-hint">Select all that apply. Don't worry about exact numbers — we handle that!</p>
+      </div>
+      <div class="appliance-grid">
+        {% for app in appliances %}
+        <label class="app-card">
+          <input type="checkbox" value="{{ app }}" onchange="updateAppCount()"/>
+          <div class="app-inner">
+            <span class="app-icon">{{ loop.cycle('❄️','🧊','🫧','📺','🚿','🌀','🍳','💻','👔','💡') }}</span>
+            <span class="app-name">{{ app }}</span>
+            <div class="app-check">✓</div>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+      <div class="selection-count" id="app-count" style="display:none">
+        <span id="count-num">0</span> appliances selected
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" onclick="goStep(1)">← Back</button>
+        <button class="btn-next" onclick="goStep(3)" id="next2" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Month & Rate -->
+    <div class="step" id="step3">
+      <div class="step-header">
+        <div class="step-num">3 of 3</div>
+        <h3 class="step-title">Which month do you want to predict?</h3>
+        <p class="step-hint">Energy usage varies by season — summer months are usually higher.</p>
+      </div>
+
+      <div class="month-grid">
+        {% for m in months %}
+        <button class="month-btn" onclick="selectMonth({{ loop.index }}, this)">{{ m[:3] }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="rate-box">
+        <label class="rate-label">
+          💰 What do you pay per unit (kWh)?
+          <span style="font-weight:400;color:#64748B;display:block;margin-top:4px;font-size:0.85rem">
+            Check your electricity bill — usually ₹4–₹12 per unit.
+          </span>
+        </label>
+        <div class="rate-input-row">
+          <span class="rupee">₹</span>
+          <input type="number" id="rate-input" value="8" min="1" max="30" step="0.5" class="rate-input"/>
+          <span class="per-unit">per unit (kWh)</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn-predict" onclick="runPrediction()" id="predict-btn" disabled>
+          ⚡ Calculate My Bill
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="step" id="step-result">
+      <div class="result-top">
+        <div class="result-badge">✅ Prediction Ready</div>
+        <h3 class="result-month" id="res-month">—</h3>
+      </div>
+
+      <div class="result-cards">
+        <div class="result-main">
+          <p class="res-label">Estimated Energy Usage</p>
+          <p class="res-big" id="res-kwh">— kWh</p>
+          <p class="res-sub">units of electricity</p>
+        </div>
+        <div class="result-main" style="--rc:#22C55E">
+          <p class="res-label">Estimated Monthly Bill</p>
+          <p class="res-big green" id="res-bill">₹ —</p>
+          <p class="res-sub">approx. cost</p>
+        </div>
+      </div>
+
+      <!-- Appliance breakdown -->
+      <div class="breakdown-section">
+        <h4 class="breakdown-title">📊 Breakdown by Appliance</h4>
+        <div class="breakdown-list" id="breakdown-list"></div>
+      </div>
+
+      <!-- Tips -->
+      <div class="tips-section" id="result-tips"></div>
+
+      <button class="btn-restart" onclick="restartWizard()">🔄 Try Different Values</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ░░░░░░░░░░░░░░░ TIPS PAGE ░░░░░░░░░░░░░░░ -->
+<div id="page-tips" class="page">
+  <div class="page-header">
+    <h2 class="page-title">Energy Saving Tips</h2>
+    <p class="page-desc">Simple habits that can cut your electricity bill every month.</p>
+  </div>
+  <div class="tips-grid">
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#EFF6FF">❄️</div>
+      <div class="tip-body">
+        <h4>Set AC to 24°C</h4>
+        <p>Every degree you lower the AC temperature adds about 6% to your energy bill. 24°C is the sweet spot for comfort and savings.</p>
+        <div class="saving-pill">Save up to 24%</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#F0FDF4">🚿</div>
+      <div class="tip-body">
+        <h4>Turn Off Geyser After Use</h4>
+        <p>Geysers keep reheating water even after you're done bathing. Switching it off saves ₹200–400 every month.</p>
+        <div class="saving-pill" style="background:#DCFCE7;color:#166534">Save ₹200-400/month</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#FFFBEB">🕖</div>
+      <div class="tip-body">
+        <h4>Avoid Peak Hours (6 PM – 10 PM)</h4>
+        <p>Electricity demand is highest in the evening. Running the washing machine or dishwasher late night or early morning saves on tariffs.</p>
+        <div class="saving-pill" style="background:#FEF3C7;color:#92400E">Save 10-15%</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#F5F3FF">💡</div>
+      <div class="tip-body">
+        <h4>Switch to LED Bulbs</h4>
+        <p>LED bulbs use 75% less electricity than regular bulbs and last 10× longer. Replace all bulbs in one go for maximum savings.</p>
+        <div class="saving-pill" style="background:#EDE9FE;color:#5B21B6">Save 75% on lighting</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#FFF1F2">🔌</div>
+      <div class="tip-body">
+        <h4>Unplug Idle Devices</h4>
+        <p>TVs, chargers, and set-top boxes on standby quietly consume power. Plugging them into a switchable power strip makes this easy.</p>
+        <div class="saving-pill" style="background:#FFE4E6;color:#9F1239">Saves ~10% monthly</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#F0FDFA">🫧</div>
+      <div class="tip-body">
+        <h4>Full Loads Only</h4>
+        <p>Run your washing machine and dishwasher only when fully loaded. A half-empty machine uses the same energy as a full one.</p>
+        <div class="saving-pill" style="background:#CCFBF1;color:#134E4A">Save 20% per cycle</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#FFFBEB">☀️</div>
+      <div class="tip-body">
+        <h4>Use Natural Light</h4>
+        <p>Keep curtains open during the day instead of turning on lights. A bright room costs ₹0.</p>
+        <div class="saving-pill" style="background:#FEF3C7;color:#92400E">Free savings</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon-wrap" style="background:#EFF6FF">🌡️</div>
+      <div class="tip-body">
+        <h4>Service Your AC Regularly</h4>
+        <p>A dirty AC filter makes the unit work harder, using up to 15% more electricity. Clean it every month during summer.</p>
+        <div class="saving-pill">Save 10-15%</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ░░ TOAST ░░ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── State ── */
+let state = { members: null, appliances: [], month: null };
+
+/* ── Page navigation ── */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ── Step navigation ── */
+function goStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const el = n === 'result' ? document.getElementById('step-result') : document.getElementById('step' + n);
+  el.classList.add('active');
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ── Members ── */
+function selectMembers(n, btn) {
+  state.members = n;
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('next1').disabled = false;
+}
+
+/* ── Appliances ── */
+function updateAppCount() {
+  const checked = [...document.querySelectorAll('.app-card input:checked')].map(i => i.value);
+  state.appliances = checked;
+  const el = document.getElementById('app-count');
+  const num = document.getElementById('count-num');
+  num.textContent = checked.length;
+  el.style.display = checked.length > 0 ? 'block' : 'none';
+  document.getElementById('next2').disabled = checked.length === 0;
+}
+
+/* ── Month ── */
+function selectMonth(m, btn) {
+  state.month = m;
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('predict-btn').disabled = false;
+}
+
+/* ── Prediction call ── */
+async function runPrediction() {
+  const rate = parseFloat(document.getElementById('rate-input').value) || 8;
+  document.getElementById('predict-btn').textContent = '⏳ Calculating...';
+  document.getElementById('predict-btn').disabled = true;
+
+  try {
+    const res = await fetch('/api/predict', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        members:    state.members,
+        appliances: state.appliances,
+        month:      state.month,
+        rate:       rate,
+      }),
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      showToast(data.error || 'Something went wrong', 'error');
+      document.getElementById('predict-btn').textContent = '⚡ Calculate My Bill';
+      document.getElementById('predict-btn').disabled = false;
+      return;
+    }
+
+    /* Fill results */
+    document.getElementById('res-month').textContent = data.month + ' — Energy Estimate';
+    document.getElementById('res-kwh').textContent   = data.kwh + ' kWh';
+    document.getElementById('res-bill').textContent  = '₹ ' + data.bill.toLocaleString('en-IN');
+
+    /* Breakdown bars */
+    const blEl = document.getElementById('breakdown-list');
+    blEl.innerHTML = '';
+    const total = Object.values(data.breakdown).reduce((a,b) => a+b, 0);
+    const sorted = Object.entries(data.breakdown).sort((a,b) => b[1]-a[1]);
+    sorted.forEach(([name, val]) => {
+      const pct = total > 0 ? Math.round(val / total * 100) : 0;
+      blEl.innerHTML += `
+        <div class="bk-row">
+          <div class="bk-name">${name}</div>
+          <div class="bk-bar-wrap">
+            <div class="bk-bar" style="width:${pct}%"></div>
+          </div>
+          <div class="bk-val">${val} kWh</div>
+        </div>`;
+    });
+
+    /* Tips */
+    const tipsEl = document.getElementById('result-tips');
+    if (data.tips && data.tips.length > 0) {
+      tipsEl.innerHTML = '<h4 class="tips-head">💡 Personalised Tips for You</h4>';
+      data.tips.forEach(t => {
+        tipsEl.innerHTML += `
+          <div class="inline-tip">
+            <span class="it-icon">${t.icon}</span>
+            <span class="it-text">${t.text}</span>
+          </div>`;
+      });
+    }
+
+    goStep('result');
+  } catch(e) {
+    showToast('Connection error — is the server running?', 'error');
+    document.getElementById('predict-btn').textContent = '⚡ Calculate My Bill';
+    document.getElementById('predict-btn').disabled = false;
+  }
+}
+
+/* ── Restart wizard ── */
+function restartWizard() {
+  state = { members: null, appliances: [], month: null };
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.app-card input').forEach(i => i.checked = false);
+  document.querySelectorAll('.app-card').forEach(c => c.classList.remove('checked'));
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('next1').disabled  = true;
+  document.getElementById('next2').disabled  = true;
+  document.getElementById('predict-btn').disabled = true;
+  document.getElementById('predict-btn').textContent = '⚡ Calculate My Bill';
+  document.getElementById('app-count').style.display = 'none';
+  goStep(1);
+}
+
+/* ── Refresh charts ── */
+async function refreshCharts() {
+  showToast('Refreshing charts…', 'info');
+  try {
+    await fetch('/api/refresh-charts');
+    const ts = '?t=' + Date.now();
+    ['hourly','daily','weekly','monthly','device'].forEach(n => {
+      const img = document.getElementById('img-' + n);
+      if (img) img.src = img.src.split('?')[0] + ts;
+    });
+    showToast('Charts updated!', 'success');
+  } catch { showToast('Refresh failed', 'error'); }
+}
+
+/* ── Toast ── */
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.className = 'toast', 3000);
+}
+
+/* ── Sync checkbox visual ── */
+document.addEventListener('change', e => {
+  if (e.target.matches('.app-card input')) {
+    e.target.closest('.app-card').classList.toggle('checked', e.target.checked);
+  }
+});
+</script>
+</body>
+</html>
