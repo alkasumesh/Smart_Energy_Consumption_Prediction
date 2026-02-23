@@ -1,92 +1,70 @@
-# Result Summary
+Result Summary
+Model Performance
 
-## Model Performance
+Two models were developed:
 
-Two models were developed and evaluated:
+Linear Regression (Baseline)
 
-1. Linear Regression
-2. LSTM (Long Short-Term Memory)
+LSTM (Final Model)
 
-### Evaluation Metrics Used
-- Mean Absolute Error (MAE)
-- Root Mean Squared Error (RMSE)
-- R² Score
+Evaluation Metrics:
 
-After comparison, Linear Regression showed:
+MAE
 
-- Lower RMSE
-- Stable MAE
-- Higher R² Score
-- Faster training time
-- Lower computational complexity
+RMSE
 
-Hence, Linear Regression was selected as the final model.
+R² Score
 
-Saved Model:
-models/linear_regression_model.save
+LSTM achieved improved error metrics and better generalization for sequential forecasting.
 
----
+Hence, LSTM was selected as the final deployed model.
 
-## Dashboard Results
+Prediction Logic
 
-The final dashboard successfully provides:
+Input:
 
-- Hourly consumption analysis
-- Daily consumption analysis
-- Weekly consumption analysis
-- Monthly consumption analysis
-- Device-wise energy share visualization
-- Interactive next-month prediction
-- Smart energy saving suggestions
+Historical daily energy consumption
 
----
+Electricity rate
 
-## Prediction Accuracy
+Output:
 
-The model generates realistic monthly consumption estimates based on:
+Estimated monthly energy consumption
 
-- Household size
-- Appliance usage
-- Historical consumption patterns
-- Temporal features
+Predicted electricity bill (₹)
 
-Predicted electricity bill is calculated using user-defined rate per kWh.
-
----
-
-## System Integration
+System Integration
 
 The system integrates:
 
-- Data preprocessing pipeline
-- Machine learning model
-- Flask backend
-- HTML/CSS frontend
-- Matplotlib visualization
-- Interactive prediction wizard
+Data preprocessing pipeline
 
-All components work cohesively.
+Time-series LSTM model
 
----
+Flask backend
 
-## Overall Outcome
+Matplotlib visualizations
+
+Interactive web interface
+
+Overall Outcome
 
 The Smart Energy Consumption Analysis and Prediction System successfully:
 
-- Analyzes historical energy usage
-- Identifies consumption trends
-- Predicts next month’s energy demand
-- Provides practical energy-saving suggestions
-- Delivers results through a user-friendly web interface
+Processes historical energy data
 
-The project meets all Module 7 and Module 8 requirements.
+Identifies temporal consumption patterns
 
----
+Forecasts future energy demand
 
-## Final Assessment
+Provides energy-saving recommendations
 
-✔ Functional  
-✔ Accurate  
-✔ User-friendly  
-✔ Scalable  
-✔ Ready for cloud deployment
+Delivers predictions through an intuitive web interface
+
+Final Assessment
+
+✔ Functional
+✔ Accurate
+✔ Deep learning-based forecasting
+✔ User-friendly
+✔ Deployment-ready
